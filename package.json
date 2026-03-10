@@ -1,0 +1,202 @@
+{
+  "name": "a2a-editor-vscode",
+  "displayName": "A2A Editor",
+  "description": "Visual editor and viewer for A2A (Agent-to-Agent) protocol Agent Cards",
+  "version": "0.2.0",
+  "publisher": "open-resource-discovery",
+  "icon": "resources/a2a-icon.png",
+  "license": "Apache-2.0",
+  "author": "SAP SE",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/open-resource-discovery/a2a-editor-vscode.git"
+  },
+  "homepage": "https://github.com/open-resource-discovery/a2a-editor-vscode#readme",
+  "bugs": {
+    "url": "https://github.com/open-resource-discovery/a2a-editor-vscode/issues"
+  },
+  "engines": {
+    "vscode": "^1.110.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "a2a",
+    "agent-to-agent",
+    "agent-card",
+    "json"
+  ],
+  "activationEvents": [],
+  "type": "module",
+  "main": "./out/extension.cjs",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "a2a-agent-explorer",
+          "title": "A2A Editor",
+          "icon": "resources/a2a-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "a2a-agent-explorer": [
+        {
+          "type": "webview",
+          "id": "a2aAgentCard.sidebarView",
+          "name": "A2A Editor"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "a2aAgentCard.editor",
+        "displayName": "A2A Agent Card Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.agentcard.json"
+          },
+          {
+            "filenamePattern": "agent-card.json"
+          },
+          {
+            "filenamePattern": "agent.json"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "commands": [
+      {
+        "command": "a2aAgentCard.openFileWith",
+        "title": "A2A: Open Current File as Agent Card"
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "a2aAgentCard.chat",
+        "name": "a2a",
+        "fullName": "A2A Agent Card",
+        "description": "Ask about agent cards, open them, or test A2A agents",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "open",
+            "description": "Open an agent card file in the A2A Editor"
+          },
+          {
+            "name": "connect",
+            "description": "Fetch and display an agent card from a URL"
+          },
+          {
+            "name": "test",
+            "description": "Send a test message to an A2A agent"
+          }
+        ]
+      }
+    ],
+    "languageModelTools": [
+      {
+        "name": "a2aAgentCard_fetchAgentCard",
+        "displayName": "Fetch A2A Agent Card",
+        "toolReferenceName": "fetchAgentCard",
+        "canBeReferencedInPrompt": true,
+        "icon": "$(globe)",
+        "modelDescription": "Fetch an A2A agent card from a URL. Tries well-known paths (/.well-known/agent.json, /.well-known/agent-card.json) before falling back to the direct URL. Returns the full agent card JSON with a summary of the agent's name, endpoint, description, and skills.",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "url"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The URL of the A2A agent or direct path to an agent card JSON file"
+            }
+          }
+        }
+      },
+      {
+        "name": "a2aAgentCard_validateAgentCard",
+        "displayName": "Validate A2A Agent Card",
+        "toolReferenceName": "validateAgentCard",
+        "canBeReferencedInPrompt": true,
+        "icon": "$(check)",
+        "modelDescription": "Validate a JSON string as an A2A agent card. Checks for required fields (name, url) and reports present optional fields (skills, capabilities, provider, securitySchemes, etc.). Returns a validation summary including whether the card is valid, which fields are present or missing, and details about skills and capabilities.",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "content"
+          ],
+          "properties": {
+            "content": {
+              "type": "string",
+              "description": "The JSON string to validate as an A2A agent card"
+            }
+          }
+        }
+      },
+      {
+        "name": "a2aAgentCard_sendMessage",
+        "displayName": "Send Message to A2A Agent",
+        "toolReferenceName": "sendA2AMessage",
+        "canBeReferencedInPrompt": true,
+        "icon": "$(comment)",
+        "modelDescription": "Send a test message to an A2A agent using the JSON-RPC 2.0 message/send method. Posts the message to the agent's URL and returns the response. Use this to test if an A2A agent is responding correctly.",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "url",
+            "message"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The A2A agent endpoint URL to send the message to"
+            },
+            "message": {
+              "type": "string",
+              "description": "The text message to send to the agent"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "npm run compile",
+    "compile": "node scripts/copy-standalone.js && node esbuild.js --production && node esbuild.webview.js --production",
+    "watch": "node esbuild.js --watch & node esbuild.webview.js --watch",
+    "eslint": "eslint .",
+    "eslint:fix": "eslint . --fix",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
+    "lint": "npm run prettier:check && npm run eslint",
+    "lint:fix": "npm run prettier && npm run eslint:fix",
+    "package": "npx @vscode/vsce package"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@open-resource-discovery/a2a-editor": "^0.3.0",
+    "@types/node": "^24.12.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/vscode": "^1.110.0",
+    "esbuild": "^0.21.0",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.57.0"
+  }
+}

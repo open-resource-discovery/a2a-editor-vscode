@@ -1,0 +1,26 @@
+src/**
+scripts/**
+node_modules/**
+.vscode/**
+.github/**
+docs/**
+tsconfig.json
+tsconfig.webview.json
+esbuild.js
+esbuild.webview.js
+eslint.config.js
+.prettierrc
+.prettierignore
+*.map
+*.vsix
+vendor/**
+.gitmodules
+package-lock.json
+a2a-editor.gif
+CODE_OF_CONDUCT.md
+CONTRIBUTING_USING_GENAI.md
+REUSE.toml
+CHANGELOG.md
+
+# Force-include media/ (overrides .gitignore exclusion)
+!media/**
