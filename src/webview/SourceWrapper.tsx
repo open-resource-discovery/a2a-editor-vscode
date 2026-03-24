@@ -184,7 +184,12 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
         <div className="sw-body">
           <SourceToggle value={sourceType} onChange={handleToggle} />
           {sourceType === "url" ? (
-            <UrlSection onConnect={handleUrlConnect} onError={setError} clearError={() => setError(null)} externalUrl={externalUrl} />
+            <UrlSection
+              onConnect={handleUrlConnect}
+              onError={setError}
+              clearError={() => setError(null)}
+              externalUrl={externalUrl}
+            />
           ) : (
             <FileSection activePath={activePath} loading={fileLoading} />
           )}
