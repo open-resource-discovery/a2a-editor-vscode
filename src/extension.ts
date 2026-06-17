@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { AgentCardEditorProvider } from "./AgentCardEditorProvider";
 import { AgentCardSidebarProvider } from "./AgentCardSidebarProvider";
 import { registerChatParticipant } from "./chatParticipant";
+import { registerMcpProvider } from "./mcp/registerMcpProvider";
 import { registerTools } from "./tools";
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -73,6 +74,33 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Register language model tools for Copilot agent mode
   context.subscriptions.push(...registerTools(sidebarProvider));
+
+  // Register the in-process HTTP MCP server so Claude Code, Cursor, and
+  // other MCP-aware clients can use the same A2A tools — not just Copilot.
+  const { manager, disposables } = registerMcpProvider(context, sidebarProvider);
+  context.subscriptions.push(...disposables);
+
+  // The MCP settings UI lives inside the sidebar's main webview (above the
+  // "Agent Card Source" section) so we wire the manager into the provider.
+  sidebarProvider.attachMcpManager(manager);
+
+  // Hold a module-level ref so deactivate() can await a graceful shutdown.
+  // VS Code awaits deactivate()'s returned Promise but does NOT await
+  // Disposable.dispose() callbacks fired from context.subscriptions, so the
+  // HTTP listener could otherwise be torn down mid-request on window close.
+  activeMcpManager = manager;
 }
 
-export function deactivate(): void {}
+let activeMcpManager: import("./mcp/serverManager").McpServerManager | null = null;
+
+export async function deactivate(): Promise<void> {
+  const m = activeMcpManager;
+  activeMcpManager = null;
+  if (m) {
+    try {
+      await m.dispose();
+    } catch {
+      // Best-effort — the host process is going away regardless.
+    }
+  }
+}

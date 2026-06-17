@@ -9,6 +9,7 @@ const KNOWN_TYPES = new Set([
   "setActiveTab",
   "sendChatMessage",
   "setConnection",
+  "mcpStatus",
 ]);
 
 export function useMessages(handler: (msg: InboundMessage) => void) {

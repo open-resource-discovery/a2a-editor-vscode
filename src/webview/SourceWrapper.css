@@ -166,3 +166,119 @@
 .sw-pw-toggle:hover {
   color: var(--vscode-foreground, #ccc);
 }
+
+/* ---------- MCP Server section ---------- */
+
+.mcp-card {
+  flex-shrink: 0;
+  overflow: hidden;
+  /* No solid background — inherits the sidebar's. */
+}
+.mcp-header-spacer {
+  flex: 1;
+}
+.mcp-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 9px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-transform: lowercase;
+}
+.mcp-badge-running {
+  background: var(--vscode-testing-iconPassed, #28a745);
+  color: var(--vscode-editor-background, #fff);
+}
+.mcp-badge-stopped {
+  background: var(--vscode-descriptionForeground, #999);
+  color: var(--vscode-editor-background, #1e1e1e);
+}
+.mcp-badge-error {
+  background: var(--vscode-errorForeground, #d13438);
+  color: #fff;
+}
+.mcp-body {
+  /* sw-body already provides padding */
+}
+.mcp-lede {
+  margin: 0 0 10px;
+  color: var(--vscode-descriptionForeground, #999);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+.mcp-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.mcp-toggle-row input {
+  margin: 0;
+  cursor: pointer;
+}
+.mcp-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.mcp-btn {
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--vscode-button-secondaryBackground, transparent);
+  background: var(--vscode-button-secondaryBackground, transparent);
+  color: var(--vscode-button-secondaryForeground, var(--vscode-foreground, #ccc));
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.mcp-btn:hover:not(:disabled) {
+  background: var(
+    --vscode-button-secondaryHoverBackground,
+    var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.15))
+  );
+}
+.mcp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.mcp-btn-primary {
+  background: var(--vscode-button-background, #0e639c);
+  color: var(--vscode-button-foreground, #fff);
+  border-color: var(--vscode-button-background, #0e639c);
+}
+.mcp-btn-primary:hover:not(:disabled) {
+  background: var(--vscode-button-hoverBackground, #1177bb);
+}
+.mcp-url-block {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+}
+.mcp-url-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.mcp-url-input {
+  flex: 1;
+  font-family: var(--vscode-editor-font-family, ui-monospace, SFMono-Regular, monospace);
+  font-size: 11.5px;
+}
+.mcp-error {
+  margin-top: 10px;
+  padding: 6px 9px;
+  border-radius: 3px;
+  background: var(--vscode-inputValidation-errorBackground, rgba(209, 52, 56, 0.15));
+  color: var(--vscode-inputValidation-errorForeground, var(--vscode-errorForeground, #d13438));
+  border: 1px solid var(--vscode-inputValidation-errorBorder, transparent);
+  font-size: 11.5px;
+  word-break: break-word;
+}

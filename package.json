@@ -32,7 +32,11 @@
     "agent-card",
     "json"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onView:a2aAgentCard.sidebarView",
+    "onCommand:a2aAgentCard.openFileWith",
+    "onMcpServerDefinitionProvider:a2aAgentCard.mcp"
+  ],
   "type": "module",
   "main": "./out/extension.cjs",
   "contributes": {
@@ -78,6 +82,28 @@
         "title": "A2A: Open Current File as Agent Card"
       }
     ],
+    "configuration": {
+      "title": "A2A Editor",
+      "properties": {
+        "a2aAgentCard.mcp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run an in-process MCP (Model Context Protocol) server so external tools (Claude Code, Cursor, Cline, ...) can use the A2A tools."
+        },
+        "a2aAgentCard.mcp.host": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "Host the MCP server binds to. Use 127.0.0.1 to restrict to this machine."
+        },
+        "a2aAgentCard.mcp.port": {
+          "type": "number",
+          "default": 39627,
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Port the MCP server listens on."
+        }
+      }
+    },
     "chatParticipants": [
       {
         "id": "a2aAgentCard.chat",
@@ -167,6 +193,12 @@
           }
         }
       }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "a2aAgentCard.mcp",
+        "label": "A2A Agent Card"
+      }
     ]
   },
   "scripts": {
@@ -201,5 +233,8 @@
   },
   "overrides": {
     "dompurify": "^3.4.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
   }
 }
