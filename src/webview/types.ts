@@ -44,6 +44,15 @@ export interface InitOptions {
   defaultTab: string;
 }
 
+export interface McpStatus {
+  enabled: boolean;
+  running: boolean;
+  url: string | null;
+  host: string;
+  port: number;
+  error: string | null;
+}
+
 // Extension host → webview messages
 export type InboundMessage =
   | { type: "setContent"; content: string }
@@ -52,7 +61,8 @@ export type InboundMessage =
   | { type: "setActiveFile"; path: string | null; content: string | null }
   | { type: "setActiveTab"; tab: "overview" | "chat" | "validation" }
   | { type: "sendChatMessage"; text: string; requestId: string }
-  | { type: "setConnection"; url: string; messagingUrl: string };
+  | { type: "setConnection"; url: string; messagingUrl: string }
+  | { type: "mcpStatus"; status: McpStatus };
 
 // webview → extension host messages
 export type OutboundMessage =
@@ -68,7 +78,9 @@ export type OutboundMessage =
       response?: string;
       compliant?: boolean;
       complianceDetails?: ComplianceDetail[];
-    };
+    }
+  | { type: "mcpReady" }
+  | { type: "mcpSave"; enabled: boolean; host: string; port: number };
 
 declare global {
   interface Window {

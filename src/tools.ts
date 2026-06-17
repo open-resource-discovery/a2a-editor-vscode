@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import type { AgentCardSidebarProvider } from "./AgentCardSidebarProvider";
 import { fetchAgentCard } from "./a2aFetch";
+import { validateAgentCardText } from "./toolDefs";
 
 // ---------------------------------------------------------------------------
 // Fetch Agent Card
@@ -70,19 +71,6 @@ interface ValidateInput {
   content: string;
 }
 
-const REQUIRED_FIELDS = ["name", "url"] as const;
-const OPTIONAL_FIELDS = [
-  "description",
-  "provider",
-  "version",
-  "skills",
-  "capabilities",
-  "securitySchemes",
-  "security",
-  "defaultInputModes",
-  "defaultOutputModes",
-] as const;
-
 class ValidateAgentCardTool implements vscode.LanguageModelTool<ValidateInput> {
   constructor(private readonly sidebar: AgentCardSidebarProvider) {}
 
@@ -91,40 +79,10 @@ class ValidateAgentCardTool implements vscode.LanguageModelTool<ValidateInput> {
   ): Promise<vscode.LanguageModelToolResult> {
     const { content } = options.input;
 
-    let parsed: Record<string, unknown>;
-    try {
-      parsed = JSON.parse(content);
-    } catch (err) {
-      return new vscode.LanguageModelToolResult([
-        new vscode.LanguageModelTextPart(`Invalid JSON: ${err instanceof Error ? err.message : err}`),
-      ]);
-    }
-
-    const missing = REQUIRED_FIELDS.filter((f) => !(f in parsed));
-    const present = [...REQUIRED_FIELDS, ...OPTIONAL_FIELDS].filter((f) => f in parsed);
-    const skills = parsed.skills as Array<Record<string, unknown>> | undefined;
-
-    const lines: string[] = [];
-    lines.push(missing.length === 0 ? "Valid: true" : "Valid: false");
-    if (missing.length) lines.push(`Missing required fields: ${missing.join(", ")}`);
-    lines.push(`Present fields: ${present.join(", ")}`);
-    if (parsed.name) lines.push(`Name: ${parsed.name}`);
-    if (parsed.url) lines.push(`Endpoint: ${parsed.url}`);
-    if (skills?.length) {
-      lines.push(`Skills (${skills.length}):`);
-      for (const s of skills) {
-        lines.push(`  - ${s.name}: ${s.description || "no description"}`);
-      }
-    }
-    const caps = parsed.capabilities as Record<string, unknown> | undefined;
-    if (caps) {
-      lines.push(
-        `Capabilities: streaming=${caps.streaming ?? false}, pushNotifications=${caps.pushNotifications ?? false}`,
-      );
-    }
+    const { valid, lines } = validateAgentCardText(content);
 
     // Show the card in the sidebar on the overview tab
-    if (missing.length === 0) {
+    if (valid) {
       await this.sidebar.reveal();
       this.sidebar.setAgentCard(content);
       this.sidebar.setActiveTab("overview");

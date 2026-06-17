@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as crypto from "crypto";
 import { getWebviewContent } from "./webviewHtml";
 import { ThemeWatcher } from "./themeWatcher";
+import type { McpServerManager } from "./mcp/serverManager";
 
 export class AgentCardSidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "a2aAgentCard.sidebarView";
@@ -13,8 +14,17 @@ export class AgentCardSidebarProvider implements vscode.WebviewViewProvider {
   private readyResolve: (() => void) | null = null;
   private readyPromise: Promise<void> | null = null;
   private toolContentLoaded = false;
+  private mcpManager: McpServerManager | null = null;
+  private mcpStatusSub: vscode.Disposable | null = null;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
+
+  /** Wire the MCP manager so the in-sidebar settings UI can read & change state. */
+  public attachMcpManager(manager: McpServerManager): void {
+    this.mcpManager = manager;
+    this.mcpStatusSub?.dispose();
+    this.mcpStatusSub = manager.onDidChangeStatus(() => this.pushMcpStatus());
+  }
 
   public setAgentCard(content: string): void {
     this.toolContentLoaded = true;
@@ -77,6 +87,11 @@ export class AgentCardSidebarProvider implements vscode.WebviewViewProvider {
     } else {
       this.pendingMessages.push(message);
     }
+  }
+
+  private pushMcpStatus(): void {
+    if (!this.mcpManager) return;
+    this.postMessage({ type: "mcpStatus", status: this.mcpManager.status() });
   }
 
   public async reveal(): Promise<void> {
@@ -173,14 +188,45 @@ export class AgentCardSidebarProvider implements vscode.WebviewViewProvider {
         case "error":
           vscode.window.showErrorMessage(`A2A Agent Card: ${message.message}`);
           break;
+        case "mcpReady":
+          // Webview's MCP section finished mounting — send it the current status.
+          this.pushMcpStatus();
+          break;
+        case "mcpSave":
+          if (this.mcpManager) {
+            void this.mcpManager
+              .updateSettings({
+                enabled: !!message.enabled,
+                host: typeof message.host === "string" && message.host ? message.host : "127.0.0.1",
+                port: clampPort(message.port),
+              })
+              .then(() => this.pushMcpStatus())
+              .catch((err: unknown) => {
+                webviewView.webview.postMessage({
+                  type: "mcpStatus",
+                  status: { ...this.mcpManager!.status(), error: err instanceof Error ? err.message : String(err) },
+                });
+              });
+          }
+          break;
       }
     });
 
     webviewView.onDidDispose(() => {
       this.themeWatcher?.dispose();
       this.themeWatcher = undefined;
+      this.mcpStatusSub?.dispose();
+      this.mcpStatusSub = null;
       this.view = undefined;
       this.ready = false;
     });
   }
+}
+
+function clampPort(p: unknown): number {
+  const n = typeof p === "number" ? p : Number(p);
+  if (!Number.isFinite(n)) return 39627;
+  const i = Math.floor(n);
+  if (i < 1 || i > 65535) return 39627;
+  return i;
 }

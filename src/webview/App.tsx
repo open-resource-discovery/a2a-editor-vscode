@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect } from "react";
+import { McpSection } from "./McpSection";
 import { SourceWrapper } from "./SourceWrapper";
 import { vscode } from "./vscodeApi";
 import { useMessages } from "./useMessages";
@@ -107,6 +108,7 @@ export function App() {
 
   return (
     <div id="a2a-outer">
+      <McpSection />
       <SourceWrapper instanceRef={instanceRef} setAgentCardContent={setAgentCardContent} />
       <div id="a2a-container" />
     </div>
