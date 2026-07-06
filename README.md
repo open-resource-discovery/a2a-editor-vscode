@@ -18,12 +18,22 @@ Built on [@open-resource-discovery/a2a-editor](https://github.com/open-resource-
 
 ## Quick Start
 
-1. Install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) or run:
+1. Build the extension `.vsix` from source:
+   ```bash
+   git clone https://github.com/open-resource-discovery/a2a-editor-vscode.git
+   cd a2a-editor-vscode
+   npm install
+   npm run package
    ```
-   ext install open-resource-discovery.a2a-editor-vscode
-   ```
-2. Click the **A2A icon** in the Activity Bar (left sidebar)
-3. Enter an agent URL and click **Connect** — or open any agent card JSON file
+   This produces `a2a-editor-vscode-<version>.vsix` in the project root.
+2. Install it into VS Code — either:
+   - From the command line:
+     ```bash
+     code --install-extension a2a-editor-vscode-<version>.vsix
+     ```
+   - Or from the UI: **Extensions** view → `…` menu → **Install from VSIX…** → pick the built file.
+3. Click the **A2A icon** in the Activity Bar (left sidebar)
+4. Enter an agent URL and click **Connect** — or open any agent card JSON file
 
 ## Usage
 
@@ -69,6 +79,56 @@ If the URL ends in `.json`, it is fetched directly without well-known path disco
 - **Basic Auth** — Username and password
 - **Bearer Token** — OAuth / JWT tokens
 - **API Key** — Custom `X-API-Key` header
+
+## MCP Server (Claude Code, Cursor, Cline, …)
+
+The extension ships an in-process **MCP (Model Context Protocol)** server so external AI tools can drive A2A agents through the same code paths as the editor. It's enabled by default and starts automatically when VS Code loads the extension.
+
+### Exposed tools
+
+Each tool also **drives the editor's sidebar** as a side effect — a fetch or a validate reveals the sidebar and loads the card into the Overview tab, and a send switches to the Chat tab so you see the exchange live in VS Code while the model works.
+
+| Tool                             | Purpose                                                                                                                                                                               | Sidebar side effect                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `a2aAgentCard_fetchAgentCard`    | Fetch an agent card from a URL. Tries `/.well-known/agent.json` and `/.well-known/agent-card.json` before falling back to the direct URL. 15 s timeout.                               | Reveals the sidebar, loads the fetched card, switches to **Overview**.                                                               |
+| `a2aAgentCard_validateAgentCard` | Validate an agent card JSON string against the A2A schema; reports missing required fields plus a skills/capabilities summary.                                                        | On valid input, reveals the sidebar, loads the card, switches to **Overview**.                                                       |
+| `a2aAgentCard_sendMessage`       | Send a test message to an agent via A2A JSON-RPC `message/send`. Returns the agent's reply plus an **A2A compliance report** (per-rule pass/fail). 30 s timeout on the fallback path. | Reveals the sidebar, switches to **Chat**, runs the message through the live chat webview so the conversation is visible in VS Code. |
+
+### Endpoint
+
+By default the server binds to `http://127.0.0.1:39627/mcp` (streamable HTTP transport). Configure via VS Code settings:
+
+- `a2aAgentCard.mcp.enabled` (default `true`)
+- `a2aAgentCard.mcp.host` (default `127.0.0.1`)
+- `a2aAgentCard.mcp.port` (default `39627`)
+
+VS Code 1.110+ auto-discovers the server via the extension's `mcpServerDefinitionProvider`, so **Copilot Chat / Agent Mode picks it up with no extra config**. For other clients, register it manually.
+
+### Claude Code
+
+Register the running server once with the Claude CLI:
+
+```bash
+claude mcp add --transport http a2a-editor http://127.0.0.1:39627/mcp
+```
+
+Then, inside a Claude Code session, the three `a2aAgentCard_*` tools are available. Verify with `/mcp` in Claude Code — the `a2a-editor` server should be listed as connected.
+
+> The VS Code window running this extension must be open for the server to be reachable.
+
+### Cursor / Cline / other MCP clients
+
+Point the client at the same URL using its HTTP MCP configuration, e.g.:
+
+```json
+{
+  "mcpServers": {
+    "a2a-editor": {
+      "url": "http://127.0.0.1:39627/mcp"
+    }
+  }
+}
+```
 
 <details>
 <summary><strong>Development</strong></summary>
