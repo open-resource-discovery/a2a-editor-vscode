@@ -84,6 +84,14 @@ If the URL ends in `.json`, it is fetched directly without well-known path disco
 
 The extension ships an in-process **MCP (Model Context Protocol)** server so external AI tools can drive A2A agents through the same code paths as the editor. It's enabled by default and starts automatically when VS Code loads the extension.
 
+### Client support at a glance
+
+| Client                                | Setup                                                                                              |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **GitHub Copilot** (Chat / Agent Mode) | Works out of the box — auto-discovered via VS Code 1.110+'s `mcpServerDefinitionProvider`.        |
+| **Claude Code**                       | Requires one-time MCP server registration ([see below](#claude-code)).                             |
+| **Cursor / Cline / other HTTP-MCP**   | Requires manual config pointing at the server URL ([see below](#cursor--cline--other-mcp-clients)). |
+
 ### Exposed tools
 
 Each tool also **drives the editor's sidebar** as a side effect — a fetch or a validate reveals the sidebar and loads the card into the Overview tab, and a send switches to the Chat tab so you see the exchange live in VS Code while the model works.
