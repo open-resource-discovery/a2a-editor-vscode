@@ -86,11 +86,11 @@ The extension ships an in-process **MCP (Model Context Protocol)** server so ext
 
 ### Client support at a glance
 
-| Client                                | Setup                                                                                              |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **GitHub Copilot** (Chat / Agent Mode) | Works out of the box — auto-discovered via VS Code 1.110+'s `mcpServerDefinitionProvider`.        |
-| **Claude Code**                       | Requires one-time MCP server registration ([see below](#claude-code)).                             |
-| **Cursor / Cline / other HTTP-MCP**   | Requires manual config pointing at the server URL ([see below](#cursor--cline--other-mcp-clients)). |
+| Client                                 | Setup                                                                                               |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **GitHub Copilot** (Chat / Agent Mode) | Works out of the box — auto-discovered via VS Code 1.110+'s `mcpServerDefinitionProvider`.          |
+| **Claude Code**                        | Requires one-time MCP server registration ([see below](#claude-code)).                              |
+| **Cursor / Cline / other HTTP-MCP**    | Requires manual config pointing at the server URL ([see below](#cursor--cline--other-mcp-clients)). |
 
 ### Exposed tools
 
