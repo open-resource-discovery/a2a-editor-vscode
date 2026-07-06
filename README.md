@@ -88,11 +88,11 @@ The extension ships an in-process **MCP (Model Context Protocol)** server so ext
 
 Each tool also **drives the editor's sidebar** as a side effect — a fetch or a validate reveals the sidebar and loads the card into the Overview tab, and a send switches to the Chat tab so you see the exchange live in VS Code while the model works.
 
-| Tool | Purpose | Sidebar side effect |
-| --- | --- | --- |
-| `a2aAgentCard_fetchAgentCard` | Fetch an agent card from a URL. Tries `/.well-known/agent.json` and `/.well-known/agent-card.json` before falling back to the direct URL. 15 s timeout. | Reveals the sidebar, loads the fetched card, switches to **Overview**. |
-| `a2aAgentCard_validateAgentCard` | Validate an agent card JSON string against the A2A schema; reports missing required fields plus a skills/capabilities summary. | On valid input, reveals the sidebar, loads the card, switches to **Overview**. |
-| `a2aAgentCard_sendMessage` | Send a test message to an agent via A2A JSON-RPC `message/send`. Returns the agent's reply plus an **A2A compliance report** (per-rule pass/fail). 30 s timeout on the fallback path. | Reveals the sidebar, switches to **Chat**, runs the message through the live chat webview so the conversation is visible in VS Code. |
+| Tool                             | Purpose                                                                                                                                                                               | Sidebar side effect                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `a2aAgentCard_fetchAgentCard`    | Fetch an agent card from a URL. Tries `/.well-known/agent.json` and `/.well-known/agent-card.json` before falling back to the direct URL. 15 s timeout.                               | Reveals the sidebar, loads the fetched card, switches to **Overview**.                                                               |
+| `a2aAgentCard_validateAgentCard` | Validate an agent card JSON string against the A2A schema; reports missing required fields plus a skills/capabilities summary.                                                        | On valid input, reveals the sidebar, loads the card, switches to **Overview**.                                                       |
+| `a2aAgentCard_sendMessage`       | Send a test message to an agent via A2A JSON-RPC `message/send`. Returns the agent's reply plus an **A2A compliance report** (per-rule pass/fail). 30 s timeout on the fallback path. | Reveals the sidebar, switches to **Chat**, runs the message through the live chat webview so the conversation is visible in VS Code. |
 
 ### Endpoint
 
