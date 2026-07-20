@@ -5,7 +5,7 @@ import { friendlyError } from "../lib/friendlyError";
 import { buildAuthHeaders, type AuthType } from "../lib/buildAuthHeaders";
 
 interface UrlSectionProps {
-  onConnect: (json: string, url: string) => void;
+  onConnect: (json: string, url: string, authHeaders?: Record<string, string>) => void;
   onError: (message: string) => void;
   clearError: () => void;
   externalUrl?: string | null;
@@ -72,7 +72,7 @@ export function UrlSection({ onConnect, onError, clearError, externalUrl }: UrlS
         } catch {
           throw new Error("Response is not valid JSON");
         }
-        onConnect(text, trimmedUrl);
+        onConnect(text, trimmedUrl, Object.keys(headers).length ? headers : undefined);
         abortRef.current = null;
         setLoading(false);
       })
