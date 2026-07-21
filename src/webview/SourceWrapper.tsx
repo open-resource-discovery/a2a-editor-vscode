@@ -53,13 +53,14 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
 
   /** Shared helper: load agent card content, mark connected, and save state snapshot */
   const loadCard = useCallback(
-    (content: string, source: "url" | "file", urlOrPath: string) => {
+    (content: string, source: "url" | "file", urlOrPath: string, authHeaders?: Record<string, string>) => {
       setAgentCardContent(content);
       if (window.useConnectionStore) {
         const store = window.useConnectionStore.getState();
         if (!store.url) {
           store.setUrl(urlOrPath);
         }
+        window.useConnectionStore.setState({ authHeaders });
       }
       markConnected();
       if (instanceRef.current) {
@@ -105,9 +106,9 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
   );
 
   const handleUrlConnect = useCallback(
-    (json: string, url: string) => {
+    (json: string, url: string, authHeaders?: Record<string, string>) => {
       hasLoadedUrlRef.current = true;
-      loadCard(json, "url", url);
+      loadCard(json, "url", url, authHeaders);
     },
     [loadCard],
   );
