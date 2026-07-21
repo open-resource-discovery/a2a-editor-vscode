@@ -72,7 +72,7 @@ export function UrlSection({ onConnect, onError, clearError, externalUrl }: UrlS
         } catch {
           throw new Error("Response is not valid JSON");
         }
-        onConnect(text, trimmedUrl, Object.keys(headers).length ? headers : undefined);
+        onConnect(text, trimmedUrl, headers);
         abortRef.current = null;
         setLoading(false);
       })

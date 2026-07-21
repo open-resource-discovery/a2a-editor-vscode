@@ -60,9 +60,7 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
         if (!store.url) {
           store.setUrl(urlOrPath);
         }
-        if (authHeaders) {
-          window.useConnectionStore.setState({ authHeaders });
-        }
+        window.useConnectionStore.setState({ authHeaders });
       }
       markConnected();
       if (instanceRef.current) {
