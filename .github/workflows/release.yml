@@ -8,11 +8,6 @@ on:
         required: false
         type: boolean
         default: true
-      openvsx:
-        description: "Open VSX Registry"
-        required: false
-        type: boolean
-        default: true
       githubRelease:
         description: "GitHub Release"
         required: false
@@ -25,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,42 +45,10 @@ jobs:
         run: npx @vscode/vsce package --no-dependencies
 
       - name: Publish to VS Marketplace
-        run: npx @vscode/vsce publish --no-dependencies
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-
-  openvsx:
-    if: inputs.openvsx
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run compile
-
-      - name: Package VSIX
-        run: npx @vscode/vsce package --no-dependencies
-
-      - name: Publish to Open VSX
-        run: npx ovsx publish *.vsix
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx @vscode/vsce publish --no-dependencies --oidc
 
   githubRelease:
-    needs: [publish, openvsx]
+    needs: [publish]
     if: |
       always() &&
       !contains(needs.*.result, 'cancelled') &&
