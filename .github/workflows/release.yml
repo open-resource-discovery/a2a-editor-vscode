@@ -18,13 +18,22 @@ jobs:
   publish:
     if: inputs.marketplace
     runs-on: ubuntu-latest
+    environment: vscode-marketplace
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Azure login (OIDC, no secrets)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -44,9 +53,7 @@ jobs:
         run: npx @vscode/vsce@4.0.1-3 package --no-dependencies
 
       - name: Publish to VS Marketplace
-        run: npx @vscode/vsce@4.0.1-3 publish --no-dependencies
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx @vscode/vsce@4.0.1-3 publish --no-dependencies --azure-credential
 
   githubRelease:
     needs: [publish]
