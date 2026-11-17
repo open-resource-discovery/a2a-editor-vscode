@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { getWebviewContent } from "./webviewHtml";
 import { ThemeWatcher } from "./themeWatcher";
+import { createOrdBridge } from "./ordBridge";
 
 export class AgentCardEditorProvider implements vscode.CustomTextEditorProvider {
   public static readonly viewType = "a2aAgentCard.editor";
@@ -26,10 +27,12 @@ export class AgentCardEditorProvider implements vscode.CustomTextEditorProvider 
     const disposables: vscode.Disposable[] = [];
 
     const themeWatcher = new ThemeWatcher(webview);
+    const ordBridge = createOrdBridge(webview);
 
     // Handle messages from the webview
     webview.onDidReceiveMessage(
       (message) => {
+        if (ordBridge.handle(message)) return;
         switch (message.type) {
           case "ready":
             webview.postMessage({
@@ -87,6 +90,7 @@ export class AgentCardEditorProvider implements vscode.CustomTextEditorProvider 
     disposables.push(docChangeListener);
 
     webviewPanel.onDidDispose(() => {
+      ordBridge.dispose();
       themeWatcher.dispose();
       for (const d of disposables) {
         d.dispose();

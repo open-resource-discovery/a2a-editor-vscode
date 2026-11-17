@@ -48,9 +48,13 @@
   overflow: hidden;
 }
 .sw-toggle-btn {
-  flex: 1;
-  padding: 4px 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 4px 6px;
   font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   border: none;
   cursor: pointer;
   background: transparent;
@@ -165,6 +169,79 @@
 }
 .sw-pw-toggle:hover {
   color: var(--vscode-foreground, #ccc);
+}
+.sw-hint {
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--vscode-descriptionForeground, #999);
+}
+
+/* ---------- ORD discovery ---------- */
+
+.sw-ord-results {
+  margin-top: 10px;
+}
+.sw-ord-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.sw-ord-agent {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  font: inherit;
+  text-align: left;
+  border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+  border-radius: 4px;
+  background: transparent;
+  color: var(--vscode-foreground, #ccc);
+  cursor: pointer;
+}
+.sw-ord-agent:hover {
+  background: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.1));
+}
+.sw-ord-agent.sw-active {
+  border-color: var(--vscode-focusBorder, #007fd4);
+  background: var(--vscode-list-activeSelectionBackground, rgba(14, 99, 156, 0.35));
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground, #fff));
+}
+.sw-ord-agent-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.sw-ord-agent-desc {
+  display: -webkit-box;
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--vscode-descriptionForeground, #999);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sw-ord-failed {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--vscode-editorWarning-foreground, #cca700);
+  word-break: break-word;
+}
+.sw-ord-failed ul {
+  margin: 2px 0 0;
+  padding-left: 16px;
+}
+.sw-ord-empty {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--vscode-descriptionForeground, #888);
 }
 
 /* ---------- MCP Server section ---------- */

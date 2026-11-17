@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) rules.
 
+## [[0.2.6](https://github.com/open-resource-discovery/a2a-editor-vscode/releases/tag/v0.2.6)] - 2026-11-17
+
+### Added
+
+- ORD discovery: list the A2A agents an Open Resource Discovery provider publishes and load one from the sidebar
+
+### Changed
+
+- README: Marketplace install in Quick Start, working Marketplace badges
+
+### Fixed
+
+- Chat went to the previously loaded agent, with the new agent's credentials, when the new agent card named no endpoint
+- Copilot, `@a2a` and MCP tools sent chat for A2A 1.0 agent cards to the card URL instead of the agent's endpoint
+- Copilot, `@a2a` and MCP tools could forward the sidebar's credentials to an agent on another host
+
 ## [[0.2.5](https://github.com/open-resource-discovery/a2a-editor-vscode/releases/tag/v0.2.5)] - 2026-11-16
 
 ### Changed

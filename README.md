@@ -1,8 +1,8 @@
-[![VS Marketplace](https://img.shields.io/visual-studio-marketplace/v/open-resource-discovery.a2a-editor-vscode?style=for-the-badge&label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) [![Installs](https://img.shields.io/visual-studio-marketplace/i/open-resource-discovery.a2a-editor-vscode?style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) [![License](https://img.shields.io/github/license/open-resource-discovery/a2a-editor-vscode?style=for-the-badge)](LICENSE)
+[![VS Marketplace](https://vsmarketplacebadges.dev/version/open-resource-discovery.a2a-editor-vscode.svg?style=for-the-badge&label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) [![Installs](https://vsmarketplacebadges.dev/installs/open-resource-discovery.a2a-editor-vscode.svg?style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) [![License](https://img.shields.io/github/license/open-resource-discovery/a2a-editor-vscode?style=for-the-badge)](LICENSE)
 
 # A2A Editor for VSCode
 
-Visual editor for [A2A (Agent-to-Agent)](https://a2a-protocol.org) protocol Agent Cards inside VS Code. Browse, edit, validate, and test your agents without leaving your IDE.
+Visual editor for [A2A (Agent-to-Agent)](https://a2a-protocol.org) protocol Agent Cards inside VS Code, with built-in agent discovery through [Open Resource Discovery (ORD)](https://open-resource-discovery.org). Discover, browse, edit, validate, and test your agents without leaving your IDE.
 
 Built on [@open-resource-discovery/a2a-editor](https://github.com/open-resource-discovery/a2a-editor).
 
@@ -12,34 +12,31 @@ Built on [@open-resource-discovery/a2a-editor](https://github.com/open-resource-
 - **Custom Editor** — Open `*.agentcard.json`, `agent-card.json`, or `agent.json` files as rendered, interactive agent cards
 - **Agent Overview** — View agent name, version, provider, description, capabilities, skills, and security schemes at a glance
 - **Chat & Testing** — Send messages to connected A2A agents and inspect raw HTTP request/response payloads
+- **ORD Discovery** — List every A2A agent an [Open Resource Discovery (ORD)](https://open-resource-discovery.org) provider publishes and load one with a click ([details](#ord-discovery))
 - **URL Discovery** — Connect to agents via URL with automatic well-known path resolution
 - **Authentication** — Built-in support for Basic Auth, Bearer Token, and API Key authentication
 - **Theme Integration** — Seamlessly follows VS Code light, dark, and high-contrast themes
 
 ## Quick Start
 
-1. Build the extension `.vsix` from source:
-   ```bash
-   git clone https://github.com/open-resource-discovery/a2a-editor-vscode.git
-   cd a2a-editor-vscode
-   npm install
-   npm run package
-   ```
-   This produces `a2a-editor-vscode-<version>.vsix` in the project root.
-2. Install it into VS Code — either:
+1. Install **A2A Editor** from the [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) — either:
+   - In VS Code: open the **Extensions** view, search for `A2A Editor`, and click **Install**.
    - From the command line:
      ```bash
-     code --install-extension a2a-editor-vscode-<version>.vsix
+     code --install-extension open-resource-discovery.a2a-editor-vscode
      ```
-   - Or from the UI: **Extensions** view → `…` menu → **Install from VSIX…** → pick the built file.
-3. Click the **A2A icon** in the Activity Bar (left sidebar)
-4. Enter an agent URL and click **Connect** — or open any agent card JSON file
+2. Click the **A2A icon** in the Activity Bar (left sidebar)
+3. Enter an agent URL and click **Connect**, discover agents from an [ORD](#ord-discovery) endpoint, or open any agent card JSON file
 
 ## Usage
 
 ### Sidebar
 
-The sidebar provides a persistent view for browsing agent cards. It automatically detects when the active editor contains an agent card JSON file and switches to display it. Enter a URL to connect to a remote agent, or toggle between URL and file sources.
+The sidebar provides a persistent view for browsing agent cards. It automatically detects when the active editor contains an agent card JSON file and switches to display it. Use **Source Type** to choose where the agent card comes from:
+
+- **URL** — connect to a remote agent by URL
+- **ORD** — discover agents from an [Open Resource Discovery](#ord-discovery) provider and pick one
+- **Current File** — show the agent card file open in the editor
 
 ![Sidebar](resources/a2a-vscode-sidebar.gif)
 
@@ -62,6 +59,20 @@ The custom editor activates as an alternative editor (not default) for:
 - `*.agentcard.json`
 - `agent-card.json`
 - `agent.json`
+
+## ORD Discovery
+
+[Open Resource Discovery (ORD)](https://open-resource-discovery.org) is an open protocol that lets applications and services describe the resources and capabilities they expose, including A2A agents. Point the sidebar at an ORD provider to list every A2A agent it publishes:
+
+1. In the sidebar, set **Source Type** to **ORD**
+2. Enter the provider's base URL or its full `/.well-known/open-resource-discovery` URL, and choose an [authentication method](#url-discovery--authentication) if the provider needs one
+3. Click **Discover Agents**, then pick an agent from the list — its card loads and chat connects to the agent's endpoint
+
+The extension reads the ORD configuration, fetches every ORD document it lists, and collects the agents from each document's `agents` list. Documents without an `agents` list fall back to API resources with `apiProtocol: "a2a"`. Only API resources with an A2A agent card resource definition (`type: "a2a-agent-card"` or `customType: "a2a:agent-card:v1"`) are listed.
+
+The extension fetches the ORD configuration, ORD documents, and agent cards itself, so ORD providers don't need to allow cross-origin (CORS) requests. Documents it can't load, for example ones that require `basic-auth` when you entered no credentials, are listed below the results. Chat messages are sent from the editor view, so the agent's endpoint must accept cross-origin requests, as for agents connected by URL.
+
+Credentials are only sent to the ORD provider itself: the origin of the URL you entered and the `baseUrl` from its ORD configuration. Agent cards and agent endpoints hosted elsewhere are requested without them.
 
 ## URL Discovery & Authentication
 
@@ -160,6 +171,17 @@ npm run compile
 1. Open this folder in VS Code
 2. Press **F5** to launch the Extension Development Host
 3. In the new window, click the **A2A icon** in the Activity Bar or run a command from the palette
+
+### Install a Local Build
+
+To try a development build in your regular VS Code instead of the Extension Development Host, package it and install the `.vsix`:
+
+```bash
+npm run package
+code --install-extension a2a-editor-vscode-<version>.vsix
+```
+
+Or from the UI: **Extensions** view → `…` menu → **Install from VSIX…** → pick the built file.
 
 ### Available Scripts
 

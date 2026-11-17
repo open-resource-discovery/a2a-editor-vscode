@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import type { AgentCardSidebarProvider } from "./AgentCardSidebarProvider";
 import { fetchAgentCard } from "./a2aFetch";
+import { agentEndpoint } from "./shared/agentEndpoint";
 
 const PARTICIPANT_ID = "a2aAgentCard.chat";
 
@@ -151,13 +152,14 @@ async function handleConnect(
     if (sidebarRef) {
       await sidebarRef.reveal();
       sidebarRef.setAgentCard(text);
-      sidebarRef.setConnection(url, (parsed.url as string) || url);
+      sidebarRef.setConnection(url, agentEndpoint(parsed) || url);
       sidebarRef.setActiveTab("overview");
     }
 
     stream.markdown(`### ${(parsed.name as string) || "Agent Card"}\n\n`);
     if (parsed.description) stream.markdown(`${parsed.description}\n\n`);
-    if (parsed.url) stream.markdown(`**Endpoint:** ${parsed.url}\n\n`);
+    const endpoint = agentEndpoint(parsed);
+    if (endpoint) stream.markdown(`**Endpoint:** ${endpoint}\n\n`);
     if (parsed.provider && typeof parsed.provider === "object") {
       const p = parsed.provider as Record<string, unknown>;
       if (p.organization) stream.markdown(`**Provider:** ${p.organization}\n\n`);

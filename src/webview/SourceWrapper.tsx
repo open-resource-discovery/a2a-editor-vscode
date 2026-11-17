@@ -1,10 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { SourceToggle } from "./components/SourceToggle";
+import { SourceToggle, type SourceType } from "./components/SourceToggle";
 import { UrlSection } from "./components/UrlSection";
+import { OrdSection } from "./components/OrdSection";
 import { FileSection } from "./components/FileSection";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { useMessages } from "./useMessages";
 import { vscode } from "./vscodeApi";
+import { agentEndpointFromJson } from "../shared/agentEndpoint";
 import type { A2APlaygroundInstance } from "./types";
 
 interface SourceWrapperProps {
@@ -33,15 +35,16 @@ function isLikelyAgentCard(parsed: Record<string, unknown>): boolean {
 export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrapperProps) {
   const initMode = window.__INIT_OPTIONS__?.mode;
   const [collapsed, setCollapsed] = useState(false);
-  const [sourceType, setSourceType] = useState<"url" | "file">(initMode === "file-editor" ? "file" : "url");
+  const [sourceType, setSourceType] = useState<SourceType>(initMode === "file-editor" ? "file" : "url");
   const [error, setError] = useState<string | null>(null);
   const [activePath, setActivePath] = useState<string | null>(null);
   const [fileLoading, setFileLoading] = useState(false);
   const [externalUrl, setExternalUrl] = useState<string | null>(null);
 
   const activeContentRef = useRef<string | null>(null);
-  const savedStateRef = useRef<{ url: Record<string, unknown> | null; file: Record<string, unknown> | null }>({
+  const savedStateRef = useRef<Record<SourceType, Record<string, unknown> | null>>({
     url: null,
+    ord: null,
     file: null,
   });
   const userPickedRef = useRef(false);
@@ -51,16 +54,21 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
     sourceTypeRef.current = sourceType;
   }, [sourceType]);
 
-  /** Shared helper: load agent card content, mark connected, and save state snapshot */
+  /**
+   * Shared helper: load agent card content, mark connected, and save state snapshot.
+   *
+   * Replaces the whole connection on every load. Chat goes to the card's endpoint, or to
+   * `urlOrPath` when the card names none, and never to a previously loaded agent.
+   */
   const loadCard = useCallback(
-    (content: string, source: "url" | "file", urlOrPath: string, authHeaders?: Record<string, string>) => {
+    (content: string, source: SourceType, urlOrPath: string, authHeaders?: Record<string, string>) => {
       setAgentCardContent(content);
       if (window.useConnectionStore) {
-        const store = window.useConnectionStore.getState();
-        if (!store.url) {
-          store.setUrl(urlOrPath);
-        }
-        window.useConnectionStore.setState({ authHeaders });
+        window.useConnectionStore.setState({
+          url: urlOrPath,
+          messagingUrl: agentEndpointFromJson(content),
+          authHeaders,
+        });
       }
       markConnected();
       if (instanceRef.current) {
@@ -71,7 +79,7 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
   );
 
   const handleToggle = useCallback(
-    (newSource: "url" | "file") => {
+    (newSource: SourceType) => {
       if (newSource === sourceTypeRef.current) return;
 
       userPickedRef.current = true;
@@ -94,9 +102,10 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
         }
         setFileLoading(true);
         vscode.postMessage({ type: "getActiveFile" });
-      } else if (newSource === "url") {
-        if (savedStateRef.current.url) {
-          instanceRef.current?.restoreState(savedStateRef.current.url);
+      } else {
+        const saved = savedStateRef.current[newSource];
+        if (saved) {
+          instanceRef.current?.restoreState(saved);
         } else {
           setAgentCardContent("");
         }
@@ -112,6 +121,16 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
     },
     [loadCard],
   );
+
+  const handleOrdSelect = useCallback(
+    (json: string, cardUrl: string, authHeaders: Record<string, string>) => {
+      hasLoadedUrlRef.current = true;
+      loadCard(json, "ord", cardUrl, authHeaders);
+    },
+    [loadCard],
+  );
+
+  const clearError = useCallback(() => setError(null), []);
 
   // Listen for setActiveFile messages
   useMessages(
@@ -184,16 +203,19 @@ export function SourceWrapper({ instanceRef, setAgentCardContent }: SourceWrappe
       {!collapsed && (
         <div className="sw-body">
           <SourceToggle value={sourceType} onChange={handleToggle} />
-          {sourceType === "url" ? (
+          {sourceType === "url" && (
             <UrlSection
               onConnect={handleUrlConnect}
               onError={setError}
-              clearError={() => setError(null)}
+              clearError={clearError}
               externalUrl={externalUrl}
             />
-          ) : (
-            <FileSection activePath={activePath} loading={fileLoading} />
           )}
+          {/* Kept mounted so discovered agents survive switching to another source and back */}
+          <div hidden={sourceType !== "ord"}>
+            <OrdSection onSelect={handleOrdSelect} onError={setError} clearError={clearError} />
+          </div>
+          {sourceType === "file" && <FileSection activePath={activePath} loading={fileLoading} />}
           {error && <ErrorDisplay message={error} />}
         </div>
       )}

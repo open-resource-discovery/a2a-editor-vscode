@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as crypto from "crypto";
 import { getWebviewContent } from "./webviewHtml";
 import { ThemeWatcher } from "./themeWatcher";
+import { createOrdBridge } from "./ordBridge";
 import type { McpServerManager } from "./mcp/serverManager";
 
 export class AgentCardSidebarProvider implements vscode.WebviewViewProvider {
@@ -136,8 +137,10 @@ export class AgentCardSidebarProvider implements vscode.WebviewViewProvider {
     webviewView.webview.html = getWebviewContent(webviewView.webview, this.context.extensionUri, { mode: "sidebar" });
 
     this.themeWatcher = new ThemeWatcher(webviewView.webview);
+    const ordBridge = createOrdBridge(webviewView.webview);
 
     webviewView.webview.onDidReceiveMessage((message) => {
+      if (ordBridge.handle(message)) return;
       switch (message.type) {
         case "ready":
           this.ready = true;
@@ -213,6 +216,7 @@ export class AgentCardSidebarProvider implements vscode.WebviewViewProvider {
     });
 
     webviewView.onDidDispose(() => {
+      ordBridge.dispose();
       this.themeWatcher?.dispose();
       this.themeWatcher = undefined;
       this.mcpStatusSub?.dispose();

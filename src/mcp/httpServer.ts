@@ -5,6 +5,7 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprot
 import type { AgentCardSidebarProvider } from "../AgentCardSidebarProvider";
 import { buildJsonRpcMessage, extractTextParts, fetchAgentCard } from "../a2aFetch";
 import { TOOL_DEFS, validateAgentCardText } from "../toolDefs";
+import { agentEndpoint } from "../shared/agentEndpoint";
 
 // In-process MCP server over Streamable HTTP. Runs inside the extension host,
 // so tool handlers can call `AgentCardSidebarProvider` directly — no IPC, no
@@ -172,17 +173,18 @@ async function handleFetch(sidebar: AgentCardSidebarProvider, url: string) {
     clearTimeout(timeout);
 
     const parsed = JSON.parse(json) as Record<string, unknown>;
+    const endpoint = agentEndpoint(parsed) || url;
     const skills = parsed.skills as Array<Record<string, unknown>> | undefined;
     const summary = [
       `Name: ${parsed.name || "unknown"}`,
-      `URL: ${parsed.url || url}`,
+      `URL: ${endpoint}`,
       `Description: ${parsed.description || "none"}`,
       `Skills: ${skills?.length ?? 0}`,
     ].join("\n");
 
     await sidebar.reveal();
     sidebar.setAgentCard(json);
-    sidebar.setConnection(url, (parsed.url as string) || url);
+    sidebar.setConnection(url, endpoint);
     sidebar.setActiveTab("overview");
 
     return textResult(`${summary}\n\nFull agent card JSON:\n${json}`);

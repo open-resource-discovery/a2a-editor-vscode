@@ -6,6 +6,15 @@ import { useMessages } from "./useMessages";
 import type { A2APlaygroundInstance } from "./types";
 import "./SourceWrapper.css";
 
+function sameOrigin(a: string | undefined, b: string | undefined): boolean {
+  if (!a || !b) return false;
+  try {
+    return new URL(a).origin === new URL(b).origin;
+  } catch {
+    return false;
+  }
+}
+
 export function App() {
   const instanceRef = useRef<A2APlaygroundInstance | null>(null);
   const currentThemeRef = useRef("dark");
@@ -94,10 +103,18 @@ export function App() {
           }
         } else if (msg.type === "setConnection") {
           if (window.useConnectionStore) {
+            // Tools fetch agent cards without credentials. Keep the current credentials only for
+            // the agent they were entered for: the same URL, or an endpoint on the same origin as
+            // it. Never forward them to another host. (`url` is compared rather than
+            // `messagingUrl`, because the preceding setContent has already moved `messagingUrl`
+            // to the new agent.)
+            const previous = window.useConnectionStore.getState();
+            const keepAuth = previous.url === msg.url || sameOrigin(previous.url, msg.messagingUrl);
             window.useConnectionStore.setState({
               url: msg.url,
               messagingUrl: msg.messagingUrl,
               connectionStatus: "connected",
+              ...(keepAuth ? {} : { authHeaders: {} }),
             });
           }
         }
