@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import type { AgentCardSidebarProvider } from "./AgentCardSidebarProvider";
 import { fetchAgentCard } from "./a2aFetch";
 import { validateAgentCardText } from "./toolDefs";
+import { agentEndpoint } from "./shared/agentEndpoint";
 
 // ---------------------------------------------------------------------------
 // Fetch Agent Card
@@ -35,10 +36,11 @@ class FetchAgentCardTool implements vscode.LanguageModelTool<FetchInput> {
       clearTimeout(timeout);
 
       const parsed = JSON.parse(json) as Record<string, unknown>;
+      const endpoint = agentEndpoint(parsed) || url;
       const skills = parsed.skills as Array<Record<string, unknown>> | undefined;
       const summary = [
         `Name: ${parsed.name || "unknown"}`,
-        `URL: ${parsed.url || url}`,
+        `URL: ${endpoint}`,
         `Description: ${parsed.description || "none"}`,
         `Skills: ${skills?.length ?? 0}`,
       ].join("\n");
@@ -46,7 +48,7 @@ class FetchAgentCardTool implements vscode.LanguageModelTool<FetchInput> {
       // Show the card in the sidebar (reveal waits for webview ready)
       await this.sidebar.reveal();
       this.sidebar.setAgentCard(json);
-      this.sidebar.setConnection(url, (parsed.url as string) || url);
+      this.sidebar.setConnection(url, endpoint);
       this.sidebar.setActiveTab("overview");
 
       return new vscode.LanguageModelToolResult([

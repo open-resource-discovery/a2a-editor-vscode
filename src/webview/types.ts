@@ -80,7 +80,10 @@ export type OutboundMessage =
       complianceDetails?: ComplianceDetail[];
     }
   | { type: "mcpReady" }
-  | { type: "mcpSave"; enabled: boolean; host: string; port: number };
+  | { type: "mcpSave"; enabled: boolean; host: string; port: number }
+  // ORD requests run by the extension host (src/ordBridge.ts), answered with an `ordResult` message
+  | { type: "ordDiscover" | "ordFetchCard"; requestId: string; url: string; headers: Record<string, string> }
+  | { type: "ordCancel"; requestId: string };
 
 declare global {
   interface Window {
@@ -88,6 +91,8 @@ declare global {
     useConnectionStore: {
       getState(): {
         url: string;
+        messagingUrl?: string;
+        authHeaders?: Record<string, string>;
         setUrl(url: string): void;
         connectionStatus: string;
       };
