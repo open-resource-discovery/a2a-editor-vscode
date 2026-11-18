@@ -32,6 +32,50 @@ The following rule governs code contributions:
 - Due to legal reasons, contributors will be asked to accept a Developer Certificate of Origin (DCO) when they create the first pull request to this project. This happens in an automated fashion during the submission process. SAP uses [the standard DCO text of the Linux Foundation](https://developercertificate.org/).
 - Contributions must follow our [guidelines on AI-generated code](https://github.com/SAP/.github/blob/main/CONTRIBUTING_USING_GENAI.md) in case you are using such tools.
 
+## Development
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) >= 24, with the npm version that ships with the latest Node.js 24 release. CI installs dependencies with `npm ci` using that npm. Older npm versions can drop optional entries from `package-lock.json` when you run `npm install`, and `npm ci` then fails in CI.
+- [VS Code](https://code.visualstudio.com/) >= 1.110
+
+### Setup
+
+```bash
+git clone https://github.com/open-resource-discovery/a2a-editor-vscode.git
+cd a2a-editor-vscode
+npm install
+npm run compile
+```
+
+### Run in Development
+
+1. Open this folder in VS Code
+2. Press **F5** to launch the Extension Development Host
+3. In the new window, click the **A2A icon** in the Activity Bar or run a command from the palette
+
+### Install a Local Build
+
+To try a development build in your regular VS Code instead of the Extension Development Host, package it and install the `.vsix`:
+
+```bash
+npm run package
+code --install-extension a2a-editor-vscode-<version>.vsix
+```
+
+Or from the UI: **Extensions** view → `…` menu → **Install from VSIX…** → pick the built file.
+
+### Available Scripts
+
+| Script             | Description                                   |
+| ------------------ | --------------------------------------------- |
+| `npm run compile`  | Build extension and webview                   |
+| `npm run watch`    | Watch mode for both builds                    |
+| `npm run lint`     | Run the Prettier check and ESLint, as CI does |
+| `npm run eslint`   | Run ESLint                                    |
+| `npm run prettier` | Format code with Prettier                     |
+| `npm run package`  | Package as `.vsix`                            |
+
 ## Issues and Planning
 
 - We use GitHub issues to track bugs and enhancement requests.

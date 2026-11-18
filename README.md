@@ -1,10 +1,12 @@
-[![VS Marketplace](https://vsmarketplacebadges.dev/version/open-resource-discovery.a2a-editor-vscode.svg?style=for-the-badge&label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) [![Installs](https://vsmarketplacebadges.dev/installs/open-resource-discovery.a2a-editor-vscode.svg?style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) [![License](https://img.shields.io/github/license/open-resource-discovery/a2a-editor-vscode?style=for-the-badge)](LICENSE)
+[![VS Marketplace][badge-marketplace]][marketplace] [![Installs][badge-installs]][marketplace] [![License][badge-license]](LICENSE) [![ORD supported][badge-ord]][ord]
 
 # A2A Editor for VSCode
 
 Visual editor for [A2A (Agent-to-Agent)](https://a2a-protocol.org) protocol Agent Cards inside VS Code, with built-in agent discovery through [Open Resource Discovery (ORD)](https://open-resource-discovery.org). Discover, browse, edit, validate, and test your agents without leaving your IDE.
 
 Built on [@open-resource-discovery/a2a-editor](https://github.com/open-resource-discovery/a2a-editor).
+
+![A2A Editor sidebar](resources/a2a-vscode-sidebar.gif)
 
 ## Features
 
@@ -17,17 +19,6 @@ Built on [@open-resource-discovery/a2a-editor](https://github.com/open-resource-
 - **Authentication** — Built-in support for Basic Auth, Bearer Token, and API Key authentication
 - **Theme Integration** — Seamlessly follows VS Code light, dark, and high-contrast themes
 
-## Quick Start
-
-1. Install **A2A Editor** from the [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode) — either:
-   - In VS Code: open the **Extensions** view, search for `A2A Editor`, and click **Install**.
-   - From the command line:
-     ```bash
-     code --install-extension open-resource-discovery.a2a-editor-vscode
-     ```
-2. Click the **A2A icon** in the Activity Bar (left sidebar)
-3. Enter an agent URL and click **Connect**, discover agents from an [ORD](#ord-discovery) endpoint, or open any agent card JSON file
-
 ## Usage
 
 ### Sidebar
@@ -37,8 +28,6 @@ The sidebar provides a persistent view for browsing agent cards. It automaticall
 - **URL** — connect to a remote agent by URL
 - **ORD** — discover agents from an [Open Resource Discovery](#ord-discovery) provider and pick one
 - **Current File** — show the agent card file open in the editor
-
-![Sidebar](resources/a2a-vscode-sidebar.gif)
 
 ### Custom Editor
 
@@ -149,56 +138,19 @@ Point the client at the same URL using its HTTP MCP configuration, e.g.:
 }
 ```
 
-<details>
-<summary><strong>Development</strong></summary>
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) >= 24
-- [VS Code](https://code.visualstudio.com/) >= 1.110
-
-### Setup
-
-```bash
-git clone https://github.com/open-resource-discovery/a2a-editor-vscode.git
-cd a2a-editor-vscode
-npm install
-npm run compile
-```
-
-### Run in Development
-
-1. Open this folder in VS Code
-2. Press **F5** to launch the Extension Development Host
-3. In the new window, click the **A2A icon** in the Activity Bar or run a command from the palette
-
-### Install a Local Build
-
-To try a development build in your regular VS Code instead of the Extension Development Host, package it and install the `.vsix`:
-
-```bash
-npm run package
-code --install-extension a2a-editor-vscode-<version>.vsix
-```
-
-Or from the UI: **Extensions** view → `…` menu → **Install from VSIX…** → pick the built file.
-
-### Available Scripts
-
-| Script             | Description                 |
-| ------------------ | --------------------------- |
-| `npm run compile`  | Build extension and webview |
-| `npm run watch`    | Watch mode for both builds  |
-| `npm run eslint`   | Run ESLint                  |
-| `npm run prettier` | Format code with Prettier   |
-| `npm run package`  | Package as `.vsix`          |
-
-</details>
-
 ## Contributing
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project, including how to build and run the extension locally.
 
 ## License
 
 Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/open-resource-discovery/a2a-editor).
+
+<!-- Badge images and links used at the top of this file -->
+
+[badge-marketplace]: https://vsmarketplacebadges.dev/version/open-resource-discovery.a2a-editor-vscode.svg?style=flat&label=VS%20Marketplace
+[badge-installs]: https://vsmarketplacebadges.dev/installs/open-resource-discovery.a2a-editor-vscode.svg?style=flat
+[badge-license]: https://img.shields.io/github/license/open-resource-discovery/a2a-editor-vscode?style=flat
+[badge-ord]: https://img.shields.io/badge/ORD-supported-209497?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHdpZHRoPSIxNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI%2BPGxpbmVhckdyYWRpZW50IGlkPSJhIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjE2IiB4Mj0iNC45OTk5OCIgeTE9IjE2IiB5Mj0iLS4wMDAwMDEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzIwOTQ5NyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNlZGViZiIvPjwvbGluZWFyR3JhZGllbnQ%2BPGcgZmlsbD0idXJsKCNhKSI%2BPHBhdGggZD0ibTEyIDguMDM1MTZjMS42OTYyLjI0MjU5IDMgMS43MDE1OSAzIDMuNDY0ODQgMCAuNjAyNi0uMTUzNyAxLjE2OS0uNDIxOSAxLjY2NDFsMS4yNzU0IDEuMjc1NGMuMTk1Mi4xOTUyLjE5NTIuNTExNyAwIC43MDdsLS43MDcuNzA3Yy0uMTk1My4xOTUyLS41MTE4LjE5NTItLjcwNyAwbC0xLjI3NTQtMS4yNzU0Yy0uNDk1MS4yNjgyLTEuMDYxNS40MjE5LTEuNjY0MS40MjE5LTEuNzYzMiAwLTMuMjIxMjEtMS4zMDM5LTMuNDYzODctM2gxLjAxMzY3Yy4yMzE2MiAxLjE0MTEgMS4yNDA3IDIgMi40NTAyIDIgMS4zODA3IDAgMi41LTEuMTE5MyAyLjUtMi41IDAtMS4yMDk1LS44NTg5LTIuMjE4NTgtMi0yLjQ1MDJ6Ii8%2BPHBhdGggZD0ibTMgMTEgLjAwNDg4LjEwMjVjLjA0NzkuNDcwNS40MjIxNS44NDQ3Ljg5MjU4Ljg5MjZsLjEwMjU0LjAwNDloMi45NjM4N2MtLjI0MjY2IDEuNjk2MS0xLjcwMDY3IDMtMy40NjM4NyAzLTEuOTMzIDAtMy41LTEuNTY3LTMuNS0zLjUgMC0xLjc2MzI1IDEuMzAzODMtMy4yMjIyNSAzLTMuNDY0ODR6Ii8%2BPHBhdGggZD0ibTExLjUgOS41YzEuMTA0NiAwIDIgLjg5NTQgMiAycy0uODk1NCAyLTIgMi0yLS44OTU0LTItMiAuODk1NC0yIDItMnoiLz48cGF0aCBkPSJtMTEuNSA5Yy0xLjM4MDcgMC0yLjUgMS4xMTkzLTIuNSAyLjVoLTFjMC0xLjkzMyAxLjU2Ny0zLjUgMy41LTMuNXoiLz48cGF0aCBkPSJtMy41IDhjMS45MzMgMCAzLjUgMS41NjcgMy41IDMuNWgtM2MtLjI3NjE0IDAtLjUtLjIyMzktLjUtLjV6Ii8%2BPHBhdGggZD0ibTcgMy41YzAgMS45MzMtMS41NjcgMy41LTMuNSAzLjV2LTNjMC0uMjc2MTQuMjIzODYtLjUuNS0uNXoiLz48cGF0aCBkPSJtMTEgMy41Yy4yNzYxIDAgLjUuMjIzODYuNS41djNjLTEuOTMzIDAtMy41LTEuNTY3LTMuNS0zLjV6Ii8%2BPHBhdGggZD0ibTMuNSAwYzEuNzYzMiAwIDMuMjIxMjEgMS4zMDM5IDMuNDYzODcgM2gtMi45NjM4N2MtLjU1MjI4IDAtMSAuNDQ3NzItMSAxdjIuOTYzODdjLTEuNjk2MS0uMjQyNjYtMy0xLjcwMDY3LTMtMy40NjM4NyAwLTEuOTMzIDEuNTY3LTMuNSAzLjUtMy41eiIvPjxwYXRoIGQ9Im0xMS41IDBjMS45MzMgMCAzLjUgMS41NjcgMy41IDMuNSAwIDEuNzYzMi0xLjMwMzkgMy4yMjEyMS0zIDMuNDYzODd2LTIuOTYzODdjMC0uNTUyMjgtLjQ0NzctMS0xLTFoLTIuOTYzODdjLjI0MjY2LTEuNjk2MSAxLjcwMDY3LTMgMy40NjM4Ny0zeiIvPjwvZz48L3N2Zz4%3D
+[marketplace]: https://marketplace.visualstudio.com/items?itemName=open-resource-discovery.a2a-editor-vscode
+[ord]: https://open-resource-discovery.org
