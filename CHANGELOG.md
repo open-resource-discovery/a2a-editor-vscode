@@ -13,7 +13,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- README: Marketplace install in Quick Start, working Marketplace badges
+- README: working Marketplace badges in flat style, "ORD supported" badge, usage GIF at the top
+- Development setup moved from the README to CONTRIBUTING.md
 
 ### Fixed
 
