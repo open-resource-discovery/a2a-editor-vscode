@@ -154,7 +154,7 @@ Point the client at the same URL using its HTTP MCP configuration, e.g.:
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) >= 26.13.1
+- [Node.js](https://nodejs.org/) >= 26
 - [VS Code](https://code.visualstudio.com/) >= 1.110
 
 ### Setup
