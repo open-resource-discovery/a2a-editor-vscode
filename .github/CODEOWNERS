@@ -1,4 +1,4 @@
 # Review owners for CI and build configuration.
-/.github/ @open-resource-discovery/a2a-editor-vscode-admin
-/package.json @open-resource-discovery/a2a-editor-vscode-admin
-/package-lock.json @open-resource-discovery/a2a-editor-vscode-admin
+/.github/ @Fannon @pavelkornev
+/package.json @Fannon @pavelkornev
+/package-lock.json @Fannon @pavelkornev
