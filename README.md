@@ -154,8 +154,10 @@ Point the client at the same URL using its HTTP MCP configuration, e.g.:
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) >= 26
+- [Node.js](https://nodejs.org/) >= 24
 - [VS Code](https://code.visualstudio.com/) >= 1.110
+
+CI builds and packages the extension on Node.js 26; the extension build target remains Node.js 24.
 
 ### Setup
 

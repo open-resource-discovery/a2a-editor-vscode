@@ -21,7 +21,7 @@
   },
   "engines": {
     "vscode": "^1.110.0",
-    "node": ">=26"
+    "node": ">=24"
   },
   "categories": [
     "Other",
