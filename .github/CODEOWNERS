@@ -2,3 +2,6 @@
 /.github/ @pavelkornev
 /package.json @pavelkornev
 /package-lock.json @pavelkornev
+
+# Review the installer policy with the corresponding package owners.
+/.npmrc @pavelkornev
